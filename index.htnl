@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<body>
+<img id="canvasImg" alt="Right click to save me!">
+<p>Kuvasi:</p>
+<canvas id="myCanvas" width="500" height="653" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+ var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+var img = new Image();
+var dx=0;
+var dy=0;
+var ds=1;
+var move=true;
+var isDown=false;
+window.onload = function(){
+ drawPhoto();
+ img.onload = function() {
+    	loaded=true;
+
+    	drawPhoto();
+	}
+ };
+var loaded;
+
+function drawPhoto() {
+
+
+
+
+
+    if (loaded) ctx.drawImage(img,dx,dy,img.width*ds,img.height*ds);
+
+    ctx.strokeStyle = '#ff0000';
+    ctx.lineWidth = 3;
+
+    drawLine(ctx,100,56,400,56);
+    drawLine(ctx,140,84,360,84);
+
+    drawLine(ctx,100,557,400,557);
+    drawLine(ctx,140,529,360,529);
+
+    drawLine(ctx,229,104,229,509);
+    drawLine(ctx,271,104,271,509);
+
+
+    drawEllipseByCenter(ctx, 250, 307, 300, 480);
+    ctx.fillRect(0,570,500,570);
+
+
+}
+function drawEllipseByCenter(ctx, cx, cy, w, h) {
+  drawEllipse(ctx, cx - w/2.0, cy - h/2.0, w, h);
+}
+function drawEllipse(ctx, x, y, w, h) {
+  var kappa = .5522848,
+      ox = (w / 2) * kappa, // control point offset horizontal
+      oy = (h / 2) * kappa, // control point offset vertical
+      xe = x + w,           // x-end
+      ye = y + h,           // y-end
+      xm = x + w / 2,       // x-middle
+      ym = y + h / 2;       // y-middle
+
+  ctx.beginPath();
+  ctx.moveTo(x, ym);
+  ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+  ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+  ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+  ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+  //ctx.closePath(); // not used correctly, see comments (use to close off open path)
+  ctx.fillStyle = "rgba(100, 100, 100, 0.5)";
+  ctx.fill();
+}
+function drawLine(ctx,x,y,x1,y1){
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x1,y1);
+    ctx.stroke();
+}
+
+function handleFileSelect(evt) {
+    var f = evt.target.files[0];
+
+      var reader = new FileReader();
+
+    reader.onload = function(){
+      var dataURL = reader.result;
+      img.src = dataURL;
+    };
+     reader.readAsDataURL(f);
+
+  }
+
+
+ // document.getElementById('fileinp').addEventListener('change', handleFileSelect, false);
+
+canvas.onmousedown = function(e) {
+    var rect = canvas.getBoundingClientRect();
+    x1 = e.clientX - rect.left;
+    y1 = e.clientY - rect.top;
+    isDown = true;
+}
+canvas.onmouseup = function() {
+    isDown = false;
+}
+canvas.onmousemove = function(e) {
+
+    if (!isDown) return;
+
+    var rect = canvas.getBoundingClientRect(),
+        x2 = e.clientX - rect.left,
+        y2 = e.clientY - rect.top;
+
+    dx+=(x2-x1);
+    dy+=(y2-y1);
+
+    drawPhoto();
+}
+var myVarP,myVarM;
+function plusPressed(){
+	myVarP =setInterval(scaleUp, 50);
+}
+function minusPressed(){
+
+	myVarM =setInterval(scaleDown, 50);
+}
+
+function  plusReleased(){
+
+	clearTimeout(myVarP);
+}
+function  minusReleased(){
+	clearTimeout(myVarM);
+}
+
+function scaleUp(){
+	 ds*=1.01;
+     drawPhoto();
+}
+function scaleDown(){
+console.log(ds);
+	 ds*=.99;
+     drawPhoto();
+}
+
+function moveLeft(){
+ dx-=1;
+ drawPhoto();
+}
+
+function moveRight(){
+dx+=1;
+drawPhoto();
+}
+
+function moveUp(){
+ dy-=1;
+ drawPhoto();
+}
+
+function moveDown(){
+	dy+=1;
+    drawPhoto();
+}
+
+
+function save(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+  if (loaded) ctx.drawImage(img,dx,dy,img.width*ds,img.height*ds);
+
+var dataURL = canvas.toDataURL("image/jpeg");
+
+      // set canvasImg image src to dataURL
+      // so it can be saved as an image
+      document.getElementById('canvasImg').src = dataURL;
+
+      drawPhoto();
+
+}
+
+</script>
+
+<input type="file" id="fileinp" accept='image/*' onchange='handleFileSelect(event)'/>
+<!--<output id="list"></output>-->
+
+<button type="button" onmousedown="plusPressed()" onclick="plusReleased()">+</button>
+<button type="button" onmousedown="minusPressed()"  onclick="minusReleased()">-</button>
+<button type="button"  onclick="moveLeft()">L</button>
+<button type="button"  onclick="moveRight()">R</button>
+<button type="button"  onclick="moveUp()">U</button>
+<button type="button"  onclick="moveDown()">D</button>
+<button type="button" onclick="save()">Save</button>
+</body>
+</html>
