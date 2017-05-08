@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html>
+<style>
+.medium-btn {
+       width: 70px;
+       height: 30px;
+   }
+   .medium-btn-1 {
+          position: relative;
+          left:35px;
+          width: 70px;
+          height: 30px;
+      }
+</style>
 <body>
+  <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
 <img id="canvasImg" alt="Right click to save me!">
 <p>Kuvasi:</p>
 <canvas id="myCanvas" width="500" height="653" style="border:1px solid #d3d3d3;">
@@ -16,6 +38,8 @@ var dy=0;
 var ds=1;
 var move=true;
 var isDown=false;
+var myVarP,myVarM;
+var myVar={};
 window.onload = function(){
  drawPhoto();
  img.onload = function() {
@@ -25,11 +49,18 @@ window.onload = function(){
 	}
  };
 var loaded;
+var firstTime=true;
+
 
 function drawPhoto() {
 
 
-
+    if (loaded && firstTime) {
+      ds=500/img.width*1.10;
+      var t=653/img.height*1.10;
+      if (ds<t) ds=t;
+      firstTime=false;
+    }
 
 
     if (loaded) ctx.drawImage(img,dx,dy,img.width*ds,img.height*ds);
@@ -94,9 +125,6 @@ function handleFileSelect(evt) {
 
   }
 
-
- // document.getElementById('fileinp').addEventListener('change', handleFileSelect, false);
-
 canvas.onmousedown = function(e) {
     var rect = canvas.getBoundingClientRect();
     x1 = e.clientX - rect.left;
@@ -114,26 +142,19 @@ canvas.onmousemove = function(e) {
         x2 = e.clientX - rect.left,
         y2 = e.clientY - rect.top;
 
-    dx+=(x2-x1);
-    dy+=(y2-y1);
+    dx+=(Math.round((x2-x1)/10));
+    dy+=(Math.round((y2-y1)/10)) ;
 
     drawPhoto();
 }
-var myVarP,myVarM;
-function plusPressed(){
-	myVarP =setInterval(scaleUp, 50);
-}
-function minusPressed(){
 
-	myVarM =setInterval(scaleDown, 50);
+function buttonPressed(what){
+  console.log(what);
+	myVar.what =setInterval(window[what], 50);
 }
 
-function  plusReleased(){
-
-	clearTimeout(myVarP);
-}
-function  minusReleased(){
-	clearTimeout(myVarM);
+function buttonReleased(what){
+	clearTimeout(myVar.what);
 }
 
 function scaleUp(){
@@ -182,16 +203,25 @@ var dataURL = canvas.toDataURL("image/jpeg");
 }
 
 </script>
-
+<br>
 <input type="file" id="fileinp" accept='image/*' onchange='handleFileSelect(event)'/>
 <!--<output id="list"></output>-->
 
-<button type="button" onmousedown="plusPressed()" onclick="plusReleased()">+</button>
-<button type="button" onmousedown="minusPressed()"  onclick="minusReleased()">-</button>
-<button type="button"  onclick="moveLeft()">L</button>
-<button type="button"  onclick="moveRight()">R</button>
-<button type="button"  onclick="moveUp()">U</button>
-<button type="button"  onclick="moveDown()">D</button>
-<button type="button" onclick="save()">Save</button>
+<button type="button" class="medium-btn" onclick="save()">Save</button>
+<br>
+<br>
+
+<button type="button" class="medium-btn" title="Scale up" onmousedown="buttonPressed('scaleUp')" onclick="buttonReleased('scaleUp')">+</button>
+<button type="button" class="medium-btn" title="Scale down"  onmousedown="buttonPressed('scaleDown')"  onclick="buttonReleased('scaleDown')">-</button>
+<br><br>
+<button type="button"  class="medium-btn-1" title="Move up"  onmousedown="buttonPressed('moveUp')" onclick="buttonReleased('moveUp')">&uarr;</button>
+<br>
+<button type="button"  class="medium-btn" title="Move left"  onmousedown="buttonPressed('moveLeft')"  onclick="buttonReleased('moveLeft')">&larr;</button>
+&nbsp;
+<button type="button"  class="medium-btn" title="Move right"  onmousedown="buttonPressed('moveRight')"  onclick="buttonReleased('moveRight')">&rarr;</button>
+<br>
+<button type="button"  class="medium-btn-1" title="Move Down"  onmousedown="buttonPressed('moveDown')"  onclick="buttonReleased('moveDown')">&darr;</button>
+<br>
+<div class="fb-like" data-href="https://f324.github.io/passphoto/" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
 </body>
 </html>
