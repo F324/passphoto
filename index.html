@@ -129,12 +129,14 @@ function drawPhoto() {
 
     drawEllipseByCenter(ctx, 250, 307, 300, 480);
     ctx.fillRect(0,570,500,570);
-    ctx.strokeStyle = '#000000';
-    ctx.font="30px Arial";
-    ctx.fillText("Drop an image onto the canvas", 50, 250);
-    ctx.fillText("0r", 240, 300);
-    ctx.fillText("select an image with the button.", 50, 350);
 
+    if (!loaded){
+      ctx.strokeStyle = '#000000';
+      ctx.font="30px Arial";
+      ctx.fillText("Drop an image onto the canvas", 50, 250);
+      ctx.fillText("0r", 240, 300);
+      ctx.fillText("select an image with the button.", 50, 350);
+    }
 
 }
 function drawEllipseByCenter(ctx, cx, cy, w, h) {
